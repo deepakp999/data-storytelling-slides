@@ -11,6 +11,7 @@ Contents:
 4. Pattern Library (slide/chart blueprints)
 5. Layout & Production Principles
 6. Chart Craft
+7. Slide Anatomy & Information Density (the visual-first / compression discipline)
 
 ---
 
@@ -200,7 +201,9 @@ deck an editorial, "published article" feel rather than a generic corporate look
 
 **Spacing & grid**
 - 16:9 (13.33" × 7.5"); outer margin ~0.6–0.8" on all sides.
-- Insight panel LEFT, chart/visual RIGHT (answer-first default).
+- **Dominant visual + thin insight rail** (not a 50/50 split): the hero visual takes ~55–70% of the
+  body; the insight rail is a narrow column of micro-points (answer-first default: rail LEFT, visual
+  RIGHT — or visual full-bleed with the rail as a slim overlay/footer). See §7 for the spec.
 - Card radius consistent (~12px); subtle shadows only.
 - Leave ~30% of each slide as breathing room.
 
@@ -270,6 +273,16 @@ physical metaphor (see the 3D exception in §5).
 Column/list (3–4 text columns), comparison matrix (options × criteria), 2×2 quadrant, L→R process flow,
 driver/issue tree, and the deck bookends (cover, section divider, executive summary).
 
+### Rendering visuals beyond native charts
+For heroes that pptxgenjs can't draw natively — **choropleth maps, Sankey/flow ribbons, treemap /
+circle-pack, chord/circular flow, network graphs, custom radial or smoothed geometry** — see
+`advanced-visuals.md`. It defines the general technique (compute geometry with a d3 module → emit SVG →
+rasterize with sharp → place as the hero image → overlay native title/callouts/legend/banner aligned to
+the same scale) and ships a concrete, proven **choropleth** recipe (d3-geo + topojson + world-atlas +
+world-countries, with centroid-anchored callout cards and a sequential legend). Default to native (Tier
+A) or shape-built (Tier B) visuals whenever they suffice; reserve rasterized heroes for real geometry
+gaps.
+
 ---
 
 ## 5. Layout & Production Principles
@@ -326,3 +339,104 @@ Concrete moves that turn a raw chart into a storytelling chart:
 9. **Left-align labels and elements** for a clean grid.
 10. **Distinguish positives from negatives** with color only when the sign matters (semantic exception).
 11. **Add an implications/insights panel** beside the chart — what it MEANS, not random points.
+
+---
+
+## 7. Slide Anatomy & Information Density (the visual-first / compression discipline)
+
+The single biggest failure mode for these decks is the "generic template": every slide a grid of text
+cards or bullet lists, an emphasis banner on each one, no real picture. It looks tidy and says nothing.
+This section is the antidote. Core principle: **the visual carries the information; text is a thin top
+layer.** Dense research is compressed *into* the visuals, not poured onto the slide as prose.
+
+### 7.1 Canonical content-slide anatomy
+Every content slide = four layers (plus an optional fifth):
+1. **Action title** — serif, quantified takeaway, 1–2 lines, top, left-aligned.
+2. **Hero visual** — ONE dominant chart/diagram/map/framework, ~55–70% of the body area, built
+   title-first (the element proving the title is emphasized; the rest recedes).
+3. **Insight rail** — a thin column (or footer strip) of **3–4 micro-points**. Each micro-point is a
+   **bold lead phrase + a ≤~8-word clause** ("**66% WTP** — urban Indians, NielsenIQ"). This is the
+   synthesis layer: the so-what the picture can't say alone. Never paragraphs, never a card grid.
+4. **On-visual annotations** — endpoint callouts, bracket+number on a gap, a highlighted point, a tag
+   pinned to a curve, direct data labels. The bulk of the detailed numbers live here, on the picture.
+5. *(optional)* **one emphasis element** — a takeaway band or hero number, only if it earns it.
+
+### 7.2 Reference layout — "hero visual + insight rail" (16:9, 13.33×7.5)
+A reliable default (answer-first; mirror L/R for the classic arrangement):
+- Title block: x 0.6, y 0.4, full width, ~0.95" tall.
+- Insight rail: x 0.6, width ~3.6–4.0", from y ~2.0 down; a big hero stat at top, a hairline divider,
+  then 3–4 micro-points evenly spaced.
+- Hero visual: x ~4.5, width ~8.2", y ~2.0, height ~4.6" — the dominant element.
+- Footnote (source / units): x 0.6, y ~6.95, small italic muted.
+Alternative: hero visual full-bleed under the title with the insight rail as a slim left overlay or a
+bottom strip of stat callouts. Either way the visual dominates and the text is a rail, not a panel.
+
+### 7.3 Text budget
+Outside the action title and the visual's own labels/annotations: **≤ ~40 words of body text per
+slide.** If over, you're narrating the picture — move facts into annotations or cut. One idea per slide.
+
+### 7.4 Compression techniques (fit ALL the research into ~10 slides, visually)
+- **One chart beats a table** — let bars/points/positions carry every value.
+- **Annotate, don't write** — supporting figures become data labels, axis ticks, endpoint callouts,
+  brackets, pinned tags ON the chart.
+- **Stat strip** — a row of 3–5 big-number callouts packs many figures into one calm frame (good for a
+  "demand / market signals" slide).
+- **Small multiples** — repeat a tiny chart across categories instead of describing each in text.
+- **Encode, don't list** — categories by position/color/size; order by a ramp; status by semantic color.
+- **Micro-points** — secondary detail goes in the insight rail (bold lead + short clause), the highest
+  information-per-word text form.
+- **Appendix** — genuinely secondary material is a back-of-deck slide, not body weight.
+
+### 7.5 Visual-first ≠ sparse
+The opposite error: a near-empty slide with one giant number and three words. That under-delivers. The
+fix is always the same balance — **dominant visual + dense on-visual annotation + tight insight rail** —
+so the slide is simultaneously calm and information-rich. Calibrate to the middle, not either extreme.
+
+### 7.6 Insight-rail micro-point & stat-strip (component specs)
+- **Micro-point:** a small brand-hue tick/square (~0.13") + text where the **lead phrase is bold ink**
+  and the rest is muted; ~11pt; 3–4 per rail, generous vertical spacing. No bullets-in-a-box.
+- **Stat strip / stat callout:** big serif number (brand-dark, ~26–34pt) + a 1-line muted caption; a
+  thin brand left-bar; group 3–5 across a row. Use for KPI/market-signal slides instead of bullet lists.
+
+### 7.7 "Is this slide generic?" self-check
+Fail any → redesign before moving on:
+- Is the body mostly text boxes / bullets with no dominant visual? → generic; add a hero visual.
+- Could a reader get the so-what from the title + visual alone (rail covered)? → if no, the visual
+  isn't doing the work.
+- Is there an emphasis banner here AND on most other slides? → cut; reserve for ~1–2 per deck.
+- Does the body text restate what the visual shows? → delete it; annotate instead.
+- Same layout as the previous slide? → vary the hero-visual type.
+
+---
+
+## 8b. Per-slide prompt specs (worked example)
+
+The Phase-3 spec is a structured brief — the editable contract for each slide and the instruction used
+to regenerate it later. Written AFTER research, so every figure is real and sourced. Two examples:
+
+```
+Slide 3 — The prize (market)
+  Action title:  India's sustainable-packaging market is on track to grow ~6× to $57B by 2033
+  Hero visual:   Area chart, market size US$B, 2024→2033 (dominant, right ~65%)
+  Data on it:    $9.0B (2024) → $57B (2033) at 22.5% CAGR; waypoint ~$20B (2028). Source: IMARC
+  Callouts:      "$9.0B" at start; dark "$57B by 2033" tag pinned to the 2033 end; "~$20B by 2028" dot
+  Insight rail:  "22.5% CAGR — fastest packaging segment" · "APAC ~21% / ~43% of revenue" ·
+                 "Biodegradable = regulation-driven core" · "India under-penetrated"
+  Emphasis:      The 2033 endpoint. Semantic colors: none (single green ramp)
+  Notes:         Footnote names metric + that biodegradable is a premium subset
+
+Slide 7 — Where to play (competition)
+  Action title:  Crowded in bagasse tableware but wide open in compostable flexible packaging
+  Hero visual:   2×2 bubble map — x = competition (low→crowded), y = opportunity (pull × volume);
+                 bubble size = segment volume; top-left quadrant tinted "WHITE SPACE"
+  Data on it:    Bubbles: Compostable flexible (low comp / high opp, highlighted, "← target");
+                 Bagasse tableware (high comp / mid); Molded fiber/rigid (mid/mid); Bioplastic resins
+  Callouts:      "4,078 players · ~30 funded (Tracxn)" corner note
+  Insight rail:  "Tableware = price war" · "Flexible barely served" · "Target the open quadrant"
+  Emphasis:      The highlighted "Compostable flexible" bubble. Semantic colors: none
+  Notes:         Name a few real leaders as labels (Ecoware, Pakka/CHUK, Pappco)
+```
+
+Present all specs together; invite edits to any field; the edited specs become the build contract.
+For single-slide iteration (Phase 6b), edit only that slide's spec and re-render only that slide,
+while re-checking the global rules (theme, one-hero-visual, ≤2 banners, consistent card geometry).
