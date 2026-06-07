@@ -1,16 +1,16 @@
 # data-storytelling-slides
- 
+
 A reusable **Agent Skill** for generating consulting-grade, data-storytelling PowerPoint decks in an
 editorial "insight-driven" visual style — bold serif action-title headlines, a single-hue color
 system, minimal chrome, and charts built to carry the argument (polished executive data stories).
- 
+
 The skill is **palette-agnostic** (it derives a theme from any brand color) and ships with a built-in
 fallback theme ("Editorial Mint"). Given a topic, it researches the subject, designs a storyline,
 writes a detailed editable prompt spec for **every** slide, and then builds the deck **one slide at a
 time, keeping you in the loop** — never as a single batch.
- 
+
 ## What's inside
- 
+
 ```
 data-storytelling-slides/
 ├── SKILL.md                      # The skill: trigger description + workflow + design rules
@@ -23,11 +23,11 @@ data-storytelling-slides/
     │                             #   the D3-gallery chart catalog by intent
     └── themes.md                 # Fallback "Editorial Mint" theme + palette-agnostic derivation recipe
 ```
- 
+
 `SKILL.md` is the entry point. The files in `references/` are loaded on demand for deeper detail.
- 
+
 ## How it works (the workflow)
- 
+
 1. **Frame** — topic, audience, goal; gather data (use provided data, or research the web for real figures).
 2. **Storyline** — pick a narrative arc, break it into beats, write each as an *action title*
    (a quantified, single-sentence takeaway); QA with the so-what + horizontal/vertical-logic tests.
@@ -45,25 +45,29 @@ data-storytelling-slides/
    images never stretched).
    - **6b. Edit one slide at a time** — later feedback edits that slide's spec and re-renders only it,
      while preserving deck-wide consistency.
+
 ## Visual range
- 
+
 - **Native charts** (editable): bar, line, area, pie/doughnut, scatter.
 - **Shape-built consulting charts** (editable): waterfall/bridge, Mekko/Marimekko, Harvey-ball
   scorecards, Gantt timelines, football-field ranges, tornado/diverging bars, 2×2 maps, pictographs.
 - **Rasterized data-viz** (SVG → image, with native text overlays): choropleth maps, Sankey, treemap,
   chord — built with the D3 ecosystem.
 - **Architecture diagrams** with **real product/service icons** (via `@iconify/json`) grouped into
-  labeled zones — the Azure-Architecture-Center look, not plain boxes.
+  labeled, color-by-vendor zones with an explanation band beneath — the Azure-Architecture-Center look,
+  not plain boxes. Two engines: **fixed-shape** (native, editable) or **elkjs** auto-layout.
+
 ## Using it across AI tools
- 
+
 This is a portable **Agent Skill** (a `SKILL.md` plus reference docs). It works anywhere that supports
 the Agent Skills format:
- 
+
 - **Claude (Claude.ai / Claude Code / Cowork / API):** place this folder in your skills directory so
   it appears in `available_skills`. It triggers automatically when you ask for an analytical/data deck,
   or invoke it by name: *"Use the data-storytelling-slides skill to make a deck on X."*
 - **Other agent tools:** point the tool at `SKILL.md` as a system/context document, or paste its
   contents as instructions. The references can be supplied when more detail is needed.
+
 ### Companion capabilities
 - A **PowerPoint rendering** capability (e.g. a `pptx` skill / `pptxgenjs`) is needed to produce the
   actual `.pptx`. `SKILL.md` defers all rendering mechanics to it.
@@ -71,18 +75,22 @@ the Agent Skills format:
   and the relevant `d3-*` modules (installed on demand).
 - If you maintain a separate corporate slide style, this skill can borrow its style-neutral component
   specs (card geometry, table spec, spacing); the visual identity here stays its own.
+
 ## Changelog
- 
+
+- **v4.1** — architecture diagrams: **elkjs auto-layout** + **fixed-shape** engines, diagram-on-top /
+  explanation-band composition, vendor color-split, embedded official-source hyperlinks.
 - **v4** — per-slide prompt specs · whole-story-first, slide-by-slide human-in-the-loop build ·
   advanced-visuals reference (maps, Sankey, treemap, chord, architecture icons, Harvey balls, Mekko) ·
   D3-gallery chart catalog · data→visualize / no-data→structure principle · aspect-ratio rule.
+
 ## Status
- 
+
 Living document. The core slide archetypes and the cross-cutting systems (color, typography, narrative,
 chart craft, layout) are captured, along with worked recipes for choropleth maps, Harvey-ball
 scorecards, and icon-based architecture diagrams. Thin spots to graduate to full worked examples over
 time: Mekko/Marimekko and Sankey on real slides.
- 
+
 ## License
- 
+
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
