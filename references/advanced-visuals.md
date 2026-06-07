@@ -61,7 +61,7 @@ fix iterations + seed positions so runs are reproducible.
 | Visual | Tier | Library / how |
 |---|---|---|
 | Bar, line, area, pie/doughnut, scatter, radar | A | pptxgenjs native charts |
-| **Architecture / system diagram** | B+ | real icons (`@iconify/json`: `logos` + `devicon`) in labeled zones + connectors — see recipe |
+| **Architecture / system diagram** | B/C | real icons (`@iconify/json`) in labeled zones + an explanation band; **elkjs** auto-layout or **fixed-shape** native — see recipe |
 | Stat callout / strip, pictograph, gauge, funnel, waterfall, 2×2 bubble, diverging bar, timeline/Gantt, process flow, matrix | B | pptxgenjs shapes + lines + text + raster icons |
 | **Choropleth / geographic map** | C | `d3-geo` + `topojson-client` + `world-atlas` (countries) / `us-atlas` (US states) + `world-countries` (region join) |
 | **Sankey / flow ribbons** | C | `d3-sankey` (layout) + `sankeyLinkHorizontal` (ribbon paths) |
@@ -232,31 +232,62 @@ the consulting look). Compute endpoints from the same scale as the bars.
 
 ## Recipe: Architecture / system diagram (real icons, not boxes)
 
-System & cloud architectures must use **real product/service icons grouped into labeled zones with clean
-connectors** — the Azure Architecture Center / AWS-diagram look — **never plain labeled boxes**. Treat
-this as its own visual type.
+System & cloud architectures use **real product/service icons grouped into labeled zones with clean
+connectors** — the Azure-Architecture-Center / AWS-diagram look — **never plain labeled boxes**. Treat
+this as its own visual type, and give it the slide composition below.
 
-**Icon source — `@iconify/json` (npm, `npm i @iconify/json`).** Read sets from
-`node_modules/@iconify/json/json/<set>.json`; each icon has a `body` + `width/height`. Useful sets:
-- `logos` — full-color brand logos: `microsoft-azure`, `microsoft-power-bi`, `apache-spark`, `sap`, …
-- `devicon` — real cloud SERVICE icons: `azuredatafactory`, `azuresqldatabase`, `microsoftsqlserver`, …
-- `simple-icons` / `fa6-solid` — monochrome brand + generic glyphs (`databricks`, `plug`, `right-left`,
-  `layer-group`); tint by replacing `currentColor` with a hex before rasterizing.
+### Icons (shared by every approach)
+`@iconify/json` (npm: `npm i @iconify/json`). Read `node_modules/@iconify/json/json/<set>.json`; each
+icon has a `body` + `width/height`. Sets: `logos` (full-color brand logos — `microsoft-azure`,
+`microsoft-power-bi`, `apache-spark`, `sap`), `devicon` (real cloud SERVICE icons — `azuredatafactory`,
+`azuresqldatabase`, `microsoftsqlserver`), `simple-icons` / `fa6-solid` (monochrome brand + generic
+glyphs — `databricks`, `plug`, `right-left`, `layer-group`; tint by replacing `currentColor`).
+Helper: render `body` in an `<svg>` **at native aspect** (width 400, height 400·h/w — never a forced
+square) → sharp PNG; return `{png|href, aspect}`. Place each icon at a fixed display height,
+width = height × aspect (**aspect rule — never stretch**).
 
-Helper: wrap `body` in an `<svg viewBox="0 0 W H">`, rasterize with sharp (`resize({fit:'contain',
-background:transparent})`), return `{png, aspect}`. Place each icon at a fixed display height with
-width = height × aspect so nothing distorts; put a short label beneath.
+### Two engines — both supported (pick by complexity)
+**(C) Fixed shapes in pptxgenjs — DEFAULT for small / mostly-linear diagrams.** Draw zone rounded-rects,
+node cards, and icons natively; route connectors yourself as **orthogonal polylines** (a helper that
+takes a list of waypoints and draws LINE segments, arrowhead on the last only). Pros: fully on-brand and
+the **only approach that stays natively editable in PowerPoint**. Con: hand-placed, so it gets fragile
+as nodes/crossings grow — lay nodes on a grid, route in the gaps, and never hand-pick coordinates that
+can collide (that causes negative-width / backwards arrows).
 
-**Layout:** group nodes into 2–4 **labeled zone containers** (light rounded rects with a header), each
-holding 1–3 icon nodes; connect zones/nodes with thin arrows. Use **semantic color**: tint a
-zone/border/connector to mark the focal or broken part (e.g. red for a blocked path) and to color-code
-by platform (e.g. SAP vs Azure). One emphasis; the rest calm. Labels stay short — the icons carry
-recognition.
+**(B) elkjs auto-layout — for complex / branchy / nested diagrams.** Build an ELK graph (nested children
+= zones via `elk.hierarchyHandling: INCLUDE_CHILDREN`; `elk.algorithm: layered`; `elk.direction: RIGHT`;
+`elk.edgeRouting: ORTHOGONAL`), give each node a fixed width/height and each edge label a width/height,
+run `await elk.layout()`, then render the returned geometry to SVG **in our editorial style** (zone rects
+from the group nodes; icon+label per node; edges from `edge.sections[].startPoint / bendPoints /
+endPoint` with arrowheads + labels) → rasterize with sharp. Pros: no hand-placing, auto-routes, scales.
+Cons: rasterized (not editable); cross-zone flows that zigzag between groups need routing/label tuning
+(nudge `elk.layered.spacing.nodeNodeBetweenLayers`, `elk.spacing.nodeNode`; give labels real sizes).
 
-**Licensing:** brand/trademark icons are used nominatively to identify the real services. For
-pixel-exact official Azure/AWS/GCP service glyphs, drop the vendor's official icon SVGs into the skill's
-assets and point the helper at them; vendor icon sets carry their own usage terms.
+**(A) Python `diagrams` (mingrammer) — quick-authentic fallback.** `pip install diagrams` (+ system
+Graphviz, usually present). Built-in cloud icon sets (`diagrams.azure.*`, AWS, GCP, k8s); `Cluster(...)`
+for zones (set `graph_attr` bgcolor/color for the vendor split) and `Custom(label, png)` for a source
+with no built-in icon (e.g. SAP — feed it a rasterized `logos:sap`); edges carry stream labels/colors.
+Pros: authentic icons, near-zero layout effort. Cons: flat PNG, Graphviz aesthetic (off-brand) and it
+sprawls; separate Python toolchain.
 
-**Canonical reference:** the SAP "original architecture" slide — SAP Source → Extraction → Azure Ingest
-→ Consume zones with real ADF / Azure SQL / Power BI / Databricks / SAP icons and a red-flagged
-extraction path.
+### Slide composition — diagram on top, explanation band below
+An architecture slide is still a hero-visual slide: **the diagram occupies the top ~60–70%**, and a
+**bottom band carries the explanation** — a short vendor/color key, 3–4 micro-points or bullets
+(bold lead + ≤~8-word clause), and a thin **`Source:` line of clickable official-doc hyperlinks**
+(pptxgenjs `addText(..., {hyperlink:{url}})`). Keep words *under* the diagram, not inside it; the icons
+and connectors carry the structure, the band carries the so-what.
+
+### Color = ownership
+When the split is meaningful (e.g. **Azure vs SAP = data-engineering vendor vs SAP vendor**), color-code
+the zones by owner and keep that mapping **consistent across before/after slides**, so "work moving from
+one side to the other" reads at a glance.
+
+### Sources & licensing
+Embed official-documentation hyperlinks where claims appear (prefer vendor docs — e.g. help.sap.com,
+SAP Notes — over community blogs). Brand/trademark icons are used nominatively; for pixel-exact official
+Azure/AWS/GCP glyphs, drop the vendor's official SVGs into the skill's assets and point the helper at
+them (their sets carry their own terms).
+
+**Canonical reference:** the SAP before/after slides — one S/4HANA source feeding three streams across an
+Azure (blue) and SAP (green) vendor split, real ADF / Azure-SQL / Databricks / SAP icons, an explanation
+band beneath, and embedded SAP Help / SAP Note links. Built both ways (elkjs and fixed-shape).
