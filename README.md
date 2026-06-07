@@ -56,4 +56,4 @@ flow, driver/issue tree, and the cover / section-divider / executive-summary boo
 
 ## License
 
-Choose a license for your repository (e.g. MIT) and add it here.
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
