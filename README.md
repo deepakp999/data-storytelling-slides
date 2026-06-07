@@ -1,4 +1,4 @@
-# data-storytelling-slides
+# data-storytelling
 
 A reusable **Agent Skill** for generating consulting-grade, data-storytelling PowerPoint decks in an
 editorial "insight-driven" visual style — bold serif action-title headlines, a single-hue color
