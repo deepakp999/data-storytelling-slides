@@ -93,6 +93,21 @@ rendering** — and then the deck is **built one slide at a time, showing the pr
 each slide before moving on (human in the loop)**, never as a single batch. Research → storyline →
 per-slide specs for ALL slides (approve the whole story first) → build slide-by-slide with approval at each → QA → later edits.
 
+> **HARD RULES (never skip)**
+> 1. NEVER build any slide before the full spec set (Phase 3) is approved by the user.
+> 2. NEVER batch-build slides. One slide at a time, each approved before moving to the next.
+> 3. "Create a deck on X" or "make slides about Y" ≠ "just build it all." The workflow still
+>    applies in full.
+> 4. NEVER render before confirming the theme (Phase 4). If the user hasn't specified a brand
+>    color or palette, ask — don't silently default to Editorial Mint.
+> 5. **Override:** If the user explicitly asks to build the full deck at once (e.g. "just build it
+>    all", "skip the review, build everything"), acknowledge the request but inform them:
+>    *"By default this skill is designed to create one slide at a time so you can steer each
+>    slide's content, visual, and data before it's rendered. Building the full deck in one go
+>    skips that edit window — you'll still be able to revise afterward, but the first pass won't
+>    have your per-slide input baked in. Shall I proceed with the batch build, or go slide by
+>    slide?"* Only batch-build after the user confirms.
+
 ### Phase 1 — Frame: topic, audience, goal, data
 1. Identify the **topic**, the **audience**, and the **decision/goal** the deck serves. If audience
    or goal is unclear and it materially changes the story, ask ONE concise question; otherwise make
@@ -199,9 +214,19 @@ have, loop back to Phase 1. Vary visual types across consecutive slides for rhyt
   The STRUCTURE does the explaining; text still obeys the budget. Even the cover and "background" slides
   get a deliberate visual structure, not a title plus a paragraph.
 
-### Phase 4 — Theme
-Read `references/themes.md`. If the user gave a brand color/palette, derive the 6 roles from it; else
-use the **Editorial Mint** fallback. State the chosen theme in one line. Keep it consistent deck-wide.
+### Phase 4 — Theme (confirm with user before rendering)
+Read `references/themes.md`. **Before rendering any slide, confirm the theme with the user:**
+
+1. If the user already specified a brand color or palette (in the original request or during earlier
+   phases), derive the 6 roles from it and state the result for confirmation.
+2. If no color was given, **ask the user** — e.g. *"Before I start building: do you have a brand
+   color or palette you'd like the deck to follow? If not, I'll use the default Editorial Mint theme
+   (white canvas, mint-green accent, serif headlines). You can also name a color/mood and I'll derive
+   a palette from it."*
+3. Only default to **Editorial Mint** after the user explicitly confirms no preference (e.g. "go with
+   the default", "no preference", "looks fine").
+
+State the chosen theme in one line. Keep it consistent deck-wide.
 
 ### Phase 5 — Build ONE SLIDE AT A TIME (human in the loop)
 **Do NOT batch-build the whole deck.** Building all slides at once is what produces a pile of uneven,
